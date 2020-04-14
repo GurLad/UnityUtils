@@ -9,4 +9,4 @@ A sound controller and a cross-fade music player.
 ## Triggers
 Allows you to reuse many scripts with an activated ability.
 ## Speech
-Two speech controllers for different situations/games. Requires all of the above to function.
+Two speech controllers for different situations/games. Requires Sound and Triggers to function.

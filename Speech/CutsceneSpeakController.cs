@@ -12,6 +12,7 @@ public class CutsceneSpeakController : MonoBehaviour
     public float MoveSpeed;
     [Range(0, 1)]
     public float ListenerFadeStrength;
+    public string ButtonName = "Fire1";
     public GameObject SpeechUI;
     public Text Panel;
     public SpeakerIcon BaseSpeaker;
@@ -21,7 +22,6 @@ public class CutsceneSpeakController : MonoBehaviour
     private string toWrite;
     private int nextLetter;
     private TCutsceneSpeak origin;
-    private int speakingToPlayer = 0;
     private float count;
     private SpeakerIcon currentSpeaker;
     private Dictionary<string, float> pitch = new Dictionary<string, float>();
@@ -102,7 +102,7 @@ public class CutsceneSpeakController : MonoBehaviour
             switch (State)
             {
                 case CurrentState.Writing:
-                    if (Control.GetButtonDown(Control.CB.Interact, speakingToPlayer) && nextLetter > 1)
+                    if (Input.GetButtonDown(ButtonName) && nextLetter > 1)
                     {
                         Panel.text = toWrite;
                         PlaySound(TypeSound, pitch[currentSpeaker.Name]);
@@ -117,7 +117,7 @@ public class CutsceneSpeakController : MonoBehaviour
                     }
                     break;
                 case CurrentState.Waiting:
-                    if (Control.GetButtonDown(Control.CB.Interact, speakingToPlayer))
+                    if (Input.GetButtonDown(ButtonName))
                     {
                         if (!origin.NextEvent())
                         {
