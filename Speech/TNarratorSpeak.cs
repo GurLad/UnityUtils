@@ -8,6 +8,7 @@ public class TNarratorSpeak : TSpeak
 
     public override void Activate()
     {
+        done = false;
         NarratorSpeakController.Instance.Say(Text, VoiceOver, Lifespan, this);
     }
 }

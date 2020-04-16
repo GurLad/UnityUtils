@@ -119,10 +119,7 @@ public class CutsceneSpeakController : MonoBehaviour
                 case CurrentState.Waiting:
                     if (Input.GetButtonDown(ButtonName))
                     {
-                        if (!origin.NextEvent())
-                        {
-                            FinishConversation();
-                        }
+                        origin.NextEvent();
                     }
                     break;
                 case CurrentState.Moving:
@@ -131,10 +128,7 @@ public class CutsceneSpeakController : MonoBehaviour
                     if (Mathf.Sign(targetPos - currentSpeaker.RectTransform.anchoredPosition.x) != Mathf.Sign(speed))
                     {
                         currentSpeaker.RectTransform.anchoredPosition = new Vector2(targetPos, currentSpeaker.RectTransform.anchoredPosition.y);
-                        if (!origin.NextEvent())
-                        {
-                            FinishConversation();
-                        }
+                        origin.NextEvent();
                     }
                     break;
                 default:
@@ -143,7 +137,7 @@ public class CutsceneSpeakController : MonoBehaviour
         }
     }
 
-    private void FinishConversation()
+    public void FinishConversation()
     {
         foreach (SpeakerIcon speaker in Speakers)
         {

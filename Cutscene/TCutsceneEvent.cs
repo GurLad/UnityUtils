@@ -2,25 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CutsceneEvent : MonoBehaviour
+public class TCutsceneEvent : ContinuousTrigger
 {
     [HideInInspector]
     public TCutscene Parent;
     private List<Trigger> triggers;
     private bool active = false;
 
+    private void Reset()
+    {
+        TrackDone = true;
+    }
+
     private void Start()
     {
         triggers = new List<Trigger>(GetComponents<Trigger>());
+        triggers.Remove(this);
     }
 
-    public void Activate()
+    public override void Activate()
     {
         foreach (var item in triggers)
         {
             item.Activate();
         }
         active = true;
+        done = false;
     }
 
     private void Update()
@@ -40,6 +47,7 @@ public class CutsceneEvent : MonoBehaviour
             }
         }
         active = false;
+        done = true;
         foreach (var item in triggers)
         {
             if (item is ContinuousTrigger)
