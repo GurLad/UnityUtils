@@ -21,11 +21,11 @@ public class CrossfadeMusicPlayer : MonoBehaviour
     private AudioSource mainAudioSource;
     private AudioSource seconderyAudioSource;
     private float count;
-    private void Start()
+    private void Awake()
     {
         if (Instance != null)
         {
-            Destroy(gameObject);
+            DestroyImmediate(gameObject);
             return;
         }
         else
@@ -46,6 +46,10 @@ public class CrossfadeMusicPlayer : MonoBehaviour
     }
     public void Play(string name)
     {
+        if (mainAudioSource.clip == Tracks.Find(a => a.Name == name).AudioClip)
+        {
+            return;
+        }
         if ((seconderyAudioSource.clip = Tracks.Find(a => a.Name == name).AudioClip) == null)
         {
             throw new System.Exception("No matching audio clip!");
@@ -67,7 +71,7 @@ public class CrossfadeMusicPlayer : MonoBehaviour
     {
         if (seconderyAudioSource.clip != null)
         {
-            count += Time.deltaTime * FadeSpeed;
+            count += Time.unscaledDeltaTime * FadeSpeed;
             if (count >= 1)
             {
                 AudioSource temp = mainAudioSource;

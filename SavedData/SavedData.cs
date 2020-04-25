@@ -105,7 +105,7 @@ public static class SavedData
     /// <param name="dataName">The name of the key.</param>
     /// <param name="saveMode">The save mode</param>
     /// <returns></returns>
-    public static bool HasKey(string dataName, SaveMode saveMode = SaveMode.SlotTime)
+    public static bool HasKey(string dataName, SaveMode saveMode = SaveMode.Slot)
     {
         dataName = (saveMode != SaveMode.Global ? SaveSlot.ToString() : "") + dataName;
         return PlayerPrefs.HasKey(dataName);
