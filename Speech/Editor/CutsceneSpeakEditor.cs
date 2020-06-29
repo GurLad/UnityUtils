@@ -48,3 +48,24 @@ public class CutsceneSpeakEditor : PropertyDrawer
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label) { return -2f; }
 }
+
+[CustomEditor(typeof(TCutsceneSpeak))]
+public class CutsceneSpeakFullEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        DrawDefaultInspector();
+        TCutsceneSpeak cutsceneSpeak = (TCutsceneSpeak)target;
+        if (cutsceneSpeak.Source != null)
+        {
+            if (GUILayout.Button("To JSON"))
+            {
+                cutsceneSpeak.ToJSON();
+            }
+            if (GUILayout.Button("From JSON"))
+            {
+                cutsceneSpeak.FromJSON();
+            }
+        }
+    }
+}

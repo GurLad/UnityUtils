@@ -5,6 +5,7 @@ using UnityEngine;
 public class TCutsceneSpeak : ContinuousTrigger
 {
     public List<CutsceneSpeakEvent> Events;
+    public TextAsset Source;
     private int nextEvent;
     private ContinuousTrigger trigger;
     private void Reset()
@@ -70,6 +71,18 @@ public class TCutsceneSpeak : ContinuousTrigger
                 break;
         }
         return;
+    }
+    public void ToJSON()
+    {
+        Debug.Log(JsonUtility.ToJson(this, true));
+        Debug.Log(Application.dataPath + UnityEditor.AssetDatabase.GetAssetPath(Source).Replace("Assets", ""));
+        // I'm using prettyPrint since I plan to use this as an easy way to proofread/find all in-game text
+        System.IO.File.WriteAllText(Application.dataPath + UnityEditor.AssetDatabase.GetAssetPath(Source).Replace("Assets", ""), JsonUtility.ToJson(this, true));
+        UnityEditor.AssetDatabase.Refresh();
+    }
+    public void FromJSON()
+    {
+        JsonUtility.FromJsonOverwrite(Source.text, this);
     }
 }
 
