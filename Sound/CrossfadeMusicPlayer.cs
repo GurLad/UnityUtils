@@ -46,7 +46,7 @@ public class CrossfadeMusicPlayer : MonoBehaviour
             Playing = Tracks[0].Name;
         }
     }
-    public void Play(string name)
+    public void Play(string name, bool? keepTimestamp = null)
     {
         CrossfadeMusicPlayerObject target = Tracks.Find(a => a.Name == name);
         if (target == null)
@@ -63,9 +63,9 @@ public class CrossfadeMusicPlayer : MonoBehaviour
         seconderyAudioSource.volume = 0;
         seconderyAudioSource.Play();
         count = 0;
-        if (KeepTimestamp && seconderyAudioSource.clip.length >= mainAudioSource.time)
+        if (keepTimestamp ?? KeepTimestamp)
         {
-            seconderyAudioSource.time = mainAudioSource.time;
+            seconderyAudioSource.time = mainAudioSource.time * (seconderyAudioSource.clip.length / mainAudioSource.clip.length);
         }
         else
         {

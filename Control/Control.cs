@@ -7,7 +7,9 @@ public static class Control
 {
     public enum CB { Interact, Attack, Pause }
     public enum CM { Keyboard, Controller }
+    public enum Axis { X, Y }
     public static CM[] players;
+    public static float DeadZone = 0.3f;
 
     public static void SetPlayers(CM player1, CM player2)
     {
@@ -39,11 +41,19 @@ public static class Control
         return Input.GetKeyDown(GetKeyCode(button.ToString(), playerID));
     }
 
-    public static float GetAxis(SnapAxis axis, int playerID)
+    public static float GetAxis(Axis axis, int playerID)
     {
         if (players[playerID] == CM.Controller)
         {
-            return Input.GetAxis("Horizontal" + playerID);
+            float input = Input.GetAxis(axis == Axis.X ? "Horizontal" : "Vertical");
+            if (Mathf.Abs(input) > DeadZone)
+            {
+                return input;
+            }
+            else
+            {
+                return 0;
+            }
         }
         else
         {
@@ -56,18 +66,18 @@ public static class Control
         Save(button + SaveNameModifier(playerID), (int)value, SaveMode.Global);
     }
 
-    public static void SetAxis(SnapAxis axis, KeyCode positiveValue, KeyCode negativeValue, int playerID)
+    public static void SetAxis(Axis axis, KeyCode positiveValue, KeyCode negativeValue, int playerID)
     {
         SetAxisPositive(axis, positiveValue, playerID);
         SetAxisNegative(axis, negativeValue, playerID);
     }
 
-    public static void SetAxisPositive(SnapAxis axis, KeyCode positiveValue, int playerID)
+    public static void SetAxisPositive(Axis axis, KeyCode positiveValue, int playerID)
     {
         Save(axis + "+" + SaveNameModifier(playerID), (int)positiveValue, SaveMode.Global);
     }
 
-    public static void SetAxisNegative(SnapAxis axis, KeyCode negativeValue, int playerID)
+    public static void SetAxisNegative(Axis axis, KeyCode negativeValue, int playerID)
     {
         Save(axis + "-" + SaveNameModifier(playerID), (int)negativeValue, SaveMode.Global);
     }
