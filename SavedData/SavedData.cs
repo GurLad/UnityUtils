@@ -47,7 +47,7 @@ public static class SavedData
         {
             if (value < 0 || value > MaxNumSlots)
             {
-                throw new Exception("Using an invalid slot (" + value + "). Must be negative and below " + MaxNumSlots);
+                throw new SavedDataException("Using an invalid slot (" + value + "). Must be negative and below " + MaxNumSlots);
             }
             if (value != saveSlot)
             {
@@ -74,13 +74,13 @@ public static class SavedData
     {
         if (fileName.Contains(',') || fileName.Contains(';') || fileName == "")
         {
-            throw new Exception("File name cannot be empty or contain , and ; (" + fileName + ").");
+            throw new SavedDataException("File name cannot be empty or contain ',' and ';' (" + fileName + ").");
         }
         if (SaveFiles.ContainsKey(fileName))
         {
             if (SaveFiles[fileName].Type != type)
             {
-                throw new Exception("Conflicting with an existing file: trying to create a " + type + " type SaveFile named " + fileName + ", while one typed " + SaveFiles[fileName].Type + " already exists.");
+                throw new SavedDataException("Conflicting with an existing file: trying to create a " + type + " type SaveFile named " + fileName + ", while one typed " + SaveFiles[fileName].Type + " already exists.");
             }
             return;
         }
@@ -96,6 +96,7 @@ public static class SavedData
     /// <param name="saveMode">Which default file to save to (global or slot-based).</param>
     public static void Save<T>(string dataName, T data, SaveMode saveMode = SaveMode.Slot)
     {
+        CheckDatanameValid(dataName);
         if (saveMode == SaveMode.Global)
         {
             GlobalFile.Set(dataName, data);
@@ -116,8 +117,9 @@ public static class SavedData
     {
         if (!SaveFiles.ContainsKey(file))
         {
-            throw new Exception("Trying to save to a non-existing file (" + file + "). Make sure to CreateFile first.");
+            throw new SavedDataException("Trying to save to a non-existing file (" + file + "). Make sure to CreateFile first.");
         }
+        CheckDatanameValid(dataName);
         SaveFiles[file].Set(dataName, data);
     }
     /// <summary>
@@ -129,6 +131,7 @@ public static class SavedData
     /// <param name="saveMode">Which default file to load from (global or slot-based).</param>
     public static T Load<T>(string dataName, T defaultValue = default, SaveMode saveMode = SaveMode.Slot)
     {
+        CheckDatanameValid(dataName);
         if (saveMode == SaveMode.Global)
         {
             return GlobalFile.Get(dataName, defaultValue);
@@ -149,8 +152,9 @@ public static class SavedData
     {
         if (!SaveFiles.ContainsKey(file))
         {
-            throw new Exception("Trying to load from a non-existing file (" + file + "). Make sure to CreateFile first.");
+            throw new SavedDataException("Trying to load from a non-existing file (" + file + "). Make sure to CreateFile first.");
         }
+        CheckDatanameValid(dataName);
         return SaveFiles[file].Get(dataName, defaultValue);
     }
     /// <summary>
@@ -181,7 +185,7 @@ public static class SavedData
     {
         if (!SaveFiles.ContainsKey(file))
         {
-            throw new Exception("Trying to append a non-existing file (" + file + "). Make sure to CreateFile first.");
+            throw new SavedDataException("Trying to append a non-existing file (" + file + "). Make sure to CreateFile first.");
         }
         SaveFiles[file].Append(dataName, data);
     }
@@ -212,7 +216,7 @@ public static class SavedData
     {
         if (!SaveFiles.ContainsKey(file))
         {
-            throw new Exception("Trying to check key in a non-existing file (" + file + "). Make sure to CreateFile first.");
+            throw new SavedDataException("Trying to check key in a non-existing file (" + file + "). Make sure to CreateFile first.");
         }
         return SaveFiles[file].HasKey(dataName);
     }
@@ -285,6 +289,19 @@ public static class SavedData
         }
     }
 
+    private static void CheckDatanameValid(string dataName)
+    {
+        if (dataName.Contains(":"))
+        {
+            throw new SavedDataException("Data name cannot contain ':' (" + dataName + ").");
+        }
+    }
+
+    public class SavedDataException : Exception
+    {
+        public SavedDataException(string what) : base("SavedData error: " + what) { }
+    }
+
     private class SaveFile
     {
         public string Name { get; }
@@ -341,7 +358,7 @@ public static class SavedData
             }
             if (allKeys.Length > 0)
             {
-                PlayerPrefs.SetString("AllKeys" + slot + Name + typeof(T).ToString(), allKeys.Substring(0, allKeys.Length - 1));
+                PlayerPrefs.SetString("AllKeys" + slot + Name + typeof(T).Name, allKeys.Substring(0, allKeys.Length - 1));
             }
         }
 
@@ -351,12 +368,12 @@ public static class SavedData
             string result = "";
             foreach (string key in dictionary.Keys)
             {
-                result += key + ":" + dictionary[key] + '\a';
+                result += key + ":" + dictionary[key] + '\r';
             }
             // Save file
             if (result.Length > 0)
             {
-                System.IO.File.WriteAllText(Application.persistentDataPath + "/Slot" + slot + "/" + Name + "Type" + typeof(T).ToString() + "s.data", result.Substring(0, result.Length - 1));
+                System.IO.File.WriteAllText(Application.persistentDataPath + "/Slot" + slot + "/" + Name + "Type" + typeof(T).Name + "s.data", result.Substring(0, result.Length - 1));
             }
         }
 
@@ -387,7 +404,7 @@ public static class SavedData
         private void PlayerPrefsLoadDictionary<T>(Dictionary<string, T> dictionary, Func<string, T> loadFunction, int slot)
         {
             dictionary.Clear();
-            string[] allKeys = PlayerPrefs.GetString("AllKeys" + slot + Name + typeof(T).ToString()).Split(';');
+            string[] allKeys = PlayerPrefs.GetString("AllKeys" + slot + Name + typeof(T).Name).Split(';');
             foreach (string key in allKeys)
             {
                 if (key == "")
@@ -402,24 +419,24 @@ public static class SavedData
         {
             dictionary.Clear();
             // Load file
-            if (!System.IO.File.Exists(Application.persistentDataPath + "/Slot" + slot + "/" + Name + "Type" + typeof(T).ToString() + "s.data"))
+            if (!System.IO.File.Exists(Application.persistentDataPath + "/Slot" + slot + "/" + Name + "Type" + typeof(T).Name + "s.data"))
             {
                 return;
             }
-            string result = System.IO.File.ReadAllText(Application.persistentDataPath + "/Slot" + slot + "/" + Name + "Type" + typeof(T).ToString() + "s.data");
+            string result = System.IO.File.ReadAllText(Application.persistentDataPath + "/Slot" + slot + "/" + Name + "Type" + typeof(T).Name + "s.data");
             // Dictionary FromString
             if (result == "")
             {
                 return;
             }
-            string[] pairs = result.Split('\a');
+            string[] pairs = result.Split('\r');
             foreach (string pair in pairs)
             {
                 string[] parts = pair.Split(':');
                 Type selectedType = typeof(T);
                 if (selectedType == typeof(string))
                 {
-                    Set(StringValues, parts[0], parts[1].ToString());
+                    Set(StringValues, parts[0], string.Join(":", parts, 1, parts.Length - 1));
                 }
                 else if (selectedType == typeof(int))
                 {
@@ -437,6 +454,10 @@ public static class SavedData
             Type selectedType = typeof(T);
             if (selectedType == typeof(string))
             {
+                if (data.ToString().Contains('\r'))
+                {
+                    throw new SavedDataException("Saving data with " + @"'\r'" + " is currently not supported (" + data.ToString() + ").");
+                }
                 Set(StringValues, dataName, data.ToString());
             }
             else if (selectedType == typeof(int))
@@ -449,7 +470,7 @@ public static class SavedData
             }
             else
             {
-                throw new Exception("Unsupported type");
+                throw new SavedDataException("Unsupported type");
             }
             if (AutoSave)
             {
@@ -487,7 +508,7 @@ public static class SavedData
             }
             else
             {
-                throw new Exception("Unsupported type");
+                throw new SavedDataException("Unsupported type");
             }
         }
 
@@ -524,7 +545,7 @@ public static class SavedData
             }
             else
             {
-                throw new Exception("Unsupported type");
+                throw new SavedDataException("Unsupported type");
             }
         }
 

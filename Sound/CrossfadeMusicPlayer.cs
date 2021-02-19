@@ -22,6 +22,7 @@ public class CrossfadeMusicPlayer : MonoBehaviour
     private AudioSource mainAudioSource;
     private AudioSource seconderyAudioSource;
     private float count;
+    private bool playingIntro;
     private void Awake()
     {
         if (Instance != null)
@@ -57,11 +58,12 @@ public class CrossfadeMusicPlayer : MonoBehaviour
         {
             return;
         }
+        seconderyAudioSource.loop = true;
+        playingIntro = false;
         seconderyAudioSource.clip = target.AudioClip;
         Playing = name;
         mainAudioSource.volume = Volume;
         seconderyAudioSource.volume = 0;
-        seconderyAudioSource.Play();
         count = 0;
         if (keepTimestamp ?? KeepTimestamp)
         {
@@ -71,6 +73,13 @@ public class CrossfadeMusicPlayer : MonoBehaviour
         {
             seconderyAudioSource.time = 0;
         }
+        seconderyAudioSource.Play();
+    }
+    public void PlayIntro(string name, bool? keepTimestamp = null)
+    {
+        Play(name + "Intro", keepTimestamp);
+        playingIntro = true;
+        seconderyAudioSource.loop = false;
     }
     private void Update()
     {
@@ -93,6 +102,19 @@ public class CrossfadeMusicPlayer : MonoBehaviour
                 mainAudioSource.volume = Volume * (1 - count);
                 seconderyAudioSource.volume = Volume * count;
             }
+        }
+        if (playingIntro && !mainAudioSource.isPlaying)
+        {
+            Playing = Playing.Replace("Intro", "");
+            CrossfadeMusicPlayerObject target = Tracks.Find(a => a.Name == Playing);
+            if (target == null)
+            {
+                throw new System.Exception("No main track for the intro! (" + Playing + ")");
+            }
+            mainAudioSource.clip = target.AudioClip;
+            mainAudioSource.Play();
+            playingIntro = false;
+            mainAudioSource.loop = true;
         }
     }
 }
