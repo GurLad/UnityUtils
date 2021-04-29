@@ -22,7 +22,7 @@ public class SoundController : MonoBehaviour
     }
     [SerializeField]
     [Range(0, 1)]
-    private float volume;
+    private float volume = 1;
     private List<AudioSource> audioSources = new List<AudioSource>();
     private AudioSource fixedPitchSource;
 

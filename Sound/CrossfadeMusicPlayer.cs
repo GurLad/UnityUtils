@@ -49,6 +49,10 @@ public class CrossfadeMusicPlayer : MonoBehaviour
     }
     public void Play(string name, bool? keepTimestamp = null)
     {
+        if (name == Playing)
+        {
+            return;
+        }
         CrossfadeMusicPlayerObject target = Tracks.Find(a => a.Name == name);
         if (target == null)
         {
