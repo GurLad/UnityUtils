@@ -5,45 +5,30 @@ using static SavedData;
 
 public static class Control
 {
-    public enum CB { Interact, Attack, Pause }
+    public enum CB { A, B, Select, Start }
     public enum CM { Keyboard, Controller }
     public enum Axis { X, Y }
-    public static CM[] players;
+    public static CM ControlMode = CM.Keyboard;
     public static float DeadZone = 0.3f;
 
-    public static void SetPlayers(CM player1, CM player2)
+    public static bool GetButton(CB button)
     {
-        SetPlayer(0, player1);
-        SetPlayer(1, player2);
+        return Input.GetKey(GetKeyCode(button.ToString()));
     }
 
-    public static void SetPlayer(int playerID, CM player)
+    public static bool GetButtonUp(CB button)
     {
-        if (players == null)
-        {
-            players = new CM[2];
-        }
-        players[playerID] = player;
+        return Input.GetKeyUp(GetKeyCode(button.ToString()));
     }
 
-    public static bool GetButton(CB button, int playerID)
+    public static bool GetButtonDown(CB button)
     {
-        return Input.GetKey(GetKeyCode(button.ToString(), playerID));
+        return Input.GetKeyDown(GetKeyCode(button.ToString()));
     }
 
-    public static bool GetButtonUp(CB button, int playerID)
+    public static float GetAxis(Axis axis)
     {
-        return Input.GetKeyUp(GetKeyCode(button.ToString(), playerID));
-    }
-
-    public static bool GetButtonDown(CB button, int playerID)
-    {
-        return Input.GetKeyDown(GetKeyCode(button.ToString(), playerID));
-    }
-
-    public static float GetAxis(Axis axis, int playerID)
-    {
-        if (players[playerID] == CM.Controller)
+        if (ControlMode == CM.Controller)
         {
             float input = Input.GetAxis(axis == Axis.X ? "Horizontal" : "Vertical");
             if (Mathf.Abs(input) > DeadZone)
@@ -57,43 +42,78 @@ public static class Control
         }
         else
         {
-            return Input.GetKey(GetKeyCode(axis + "+", playerID)) ? 1 : (Input.GetKey(GetKeyCode(axis + "-", playerID)) ? -1 : 0);
+            return Input.GetKey(GetKeyCode(axis + "+")) ? 1 : (Input.GetKey(GetKeyCode(axis + "-")) ? -1 : 0);
         }
     }
 
-    public static void SetButton(CB button, KeyCode value, int playerID)
+    public static int GetAxisInt(Axis axis)
     {
-        Save(button + SaveNameModifier(playerID), (int)value, SaveMode.Global);
+        if (ControlMode == CM.Controller)
+        {
+            float input = Input.GetAxis(axis == Axis.X ? "Horizontal" : "Vertical");
+            if (Mathf.Abs(input) > DeadZone)
+            {
+                return (int)Mathf.Sign(input);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return Input.GetKey(GetKeyCode(axis + "+")) ? 1 : (Input.GetKey(GetKeyCode(axis + "-")) ? -1 : 0);
+        }
     }
 
-    public static void SetAxis(Axis axis, KeyCode positiveValue, KeyCode negativeValue, int playerID)
+    public static void SetButton(CB button, KeyCode value)
     {
-        SetAxisPositive(axis, positiveValue, playerID);
-        SetAxisNegative(axis, negativeValue, playerID);
+        Save(button + SaveNameModifier(), (int)value, SaveMode.Global);
     }
 
-    public static void SetAxisPositive(Axis axis, KeyCode positiveValue, int playerID)
+    public static void SetAxis(Axis axis, KeyCode positiveValue, KeyCode negativeValue)
     {
-        Save(axis + "+" + SaveNameModifier(playerID), (int)positiveValue, SaveMode.Global);
+        SetAxisPositive(axis, positiveValue);
+        SetAxisNegative(axis, negativeValue);
     }
 
-    public static void SetAxisNegative(Axis axis, KeyCode negativeValue, int playerID)
+    public static void SetAxisPositive(Axis axis, KeyCode positiveValue)
     {
-        Save(axis + "-" + SaveNameModifier(playerID), (int)negativeValue, SaveMode.Global);
+        Save(axis + "+" + SaveNameModifier(), (int)positiveValue, SaveMode.Global);
     }
 
-    public static string DisplayButtonName(string keySaveName, int playerID)
+    public static void SetAxisNegative(Axis axis, KeyCode negativeValue)
     {
-        return GetKeyCode(keySaveName, playerID).ToString();
+        Save(axis + "-" + SaveNameModifier(), (int)negativeValue, SaveMode.Global);
     }
 
-    private static KeyCode GetKeyCode(string keySaveName, int playerID)
+    public static void SetKey(string keySaveName, KeyCode value)
     {
-        return (KeyCode)Load(keySaveName + SaveNameModifier(playerID), 0, SaveMode.Global);
+        Save(keySaveName + SaveNameModifier(), (int)value, SaveMode.Global);
     }
 
-    private static string SaveNameModifier(int playerID)
+    public static string DisplayButtonName(string keySaveName)
     {
-        return "ButtonP" + playerID + "C" + (players[playerID] == CM.Controller ? "T" : "F");
+        return GetKeyCode(keySaveName).ToString();
+    }
+
+    public static string DisplayShortButtonName(string keySaveName)
+    {
+        return DisplayButtonName(keySaveName).Replace("Arrow", "").Replace("Keypad", "Num").Replace("Alpha", "").Replace("Return", "Enter");
+    }
+
+    public static string DisplayShortButtonName(CB button)
+    {
+        return DisplayShortButtonName(button.ToString());
+    }
+
+    public static KeyCode GetKeyCode(string keySaveName)
+    {
+        return (KeyCode)Load(keySaveName + SaveNameModifier(), 0, SaveMode.Global);
+    }
+
+    private static string SaveNameModifier()
+    {
+        return "ButtonC" + (ControlMode == CM.Controller ? "T" : "F");
     }
 }

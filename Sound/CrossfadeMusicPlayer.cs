@@ -25,6 +25,7 @@ public class CrossfadeMusicPlayer : MonoBehaviour
     private bool playingIntro;
     private void Awake()
     {
+        transform.parent = null;
         if (Instance != null)
         {
             DestroyImmediate(gameObject);

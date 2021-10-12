@@ -29,6 +29,7 @@ public class SceneLoader : MonoBehaviour
     }
     private void Awake()
     {
+        transform.parent = null;
         if (current != null)
         {
             DestroyImmediate(gameObject);
