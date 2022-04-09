@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class TSpeak : ContinuousTrigger
 {
+    [TextArea]
     public string Text;
     public AudioClip VoiceOver;
 }

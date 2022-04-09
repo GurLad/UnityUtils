@@ -14,7 +14,7 @@ public class TCutsceneEvent : ContinuousTrigger
         TrackDone = true;
     }
 
-    private void Start()
+    private void Awake()
     {
         triggers = new List<Trigger>(GetComponents<Trigger>());
         triggers.Remove(this);

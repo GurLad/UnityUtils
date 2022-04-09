@@ -7,19 +7,21 @@ using static SoundController;
 public class NarratorSpeakController : MonoBehaviour
 {
     public static NarratorSpeakController Instance;
-    private enum CurrentMode { Show, Wait, Hide, Sleep }
+    private enum CurrentMode { Show, Wait, Hide, Delay, Sleep }
     public Text Text;
     public Image TextBG;
-    public float TransitionSpeed;
-    public float Lifespan;
+    public float TransitionTime;
+    public float PostSpeakDelay;
     public float BGAlpha;
+    [HideInInspector]
+    public float Lifespan;
     private float count;
     private CurrentMode currentMode = CurrentMode.Sleep;
     private Color textColor;
     private Color textBGColor;
     private TNarratorSpeak origin;
 
-    private void Start()
+    private void Awake()
     {
         Instance = this;
         textColor = Text.color;
@@ -52,7 +54,7 @@ public class NarratorSpeakController : MonoBehaviour
         {
             case CurrentMode.Show:
                 count += Time.deltaTime;
-                if (count >= TransitionSpeed)
+                if (count >= TransitionTime)
                 {
                     textBGColor.a = BGAlpha;
                     textColor.a = 1;
@@ -60,7 +62,7 @@ public class NarratorSpeakController : MonoBehaviour
                     currentMode = CurrentMode.Wait;
                     break;
                 }
-                percent = count / TransitionSpeed;
+                percent = count / TransitionTime;
                 textBGColor.a = BGAlpha * percent;
                 textColor.a = 1 * percent;
                 break;
@@ -75,23 +77,30 @@ public class NarratorSpeakController : MonoBehaviour
                 break;
             case CurrentMode.Hide:
                 count += Time.deltaTime;
-                if (count >= TransitionSpeed)
+                if (count >= TransitionTime)
                 {
                     textBGColor.a = 0;
                     textColor.a = 0;
                     Text.color = textColor;
                     TextBG.color = textBGColor;
                     count = 0;
+                    currentMode = CurrentMode.Delay;
+                    break;
+                }
+                percent = 1 - count / TransitionTime;
+                textBGColor.a = BGAlpha * percent;
+                textColor.a = 1 * percent;
+                break;
+            case CurrentMode.Delay:
+                count += Time.deltaTime;
+                if (count >= PostSpeakDelay)
+                {
                     currentMode = CurrentMode.Sleep;
                     if (origin != null)
                     {
                         origin.Done = true;
                     }
-                    break;
                 }
-                percent = 1 - count / TransitionSpeed;
-                textBGColor.a = BGAlpha * percent;
-                textColor.a = 1 * percent;
                 break;
             default:
                 return;

@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class ContinuousTrigger : Trigger
 {
     public bool TrackDone;
-    public bool Done
+    public virtual bool Done
     {
         get
         {

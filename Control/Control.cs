@@ -66,6 +66,26 @@ public static class Control
         }
     }
 
+    public static int GetAxisIntDown(Axis axis)
+    {
+        if (ControlMode == CM.Controller)
+        {
+            float input = Input.GetAxis(axis == Axis.X ? "Horizontal" : "Vertical");
+            if (Mathf.Abs(input) > DeadZone)
+            {
+                return (int)Mathf.Sign(input);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            return Input.GetKeyDown(GetKeyCode(axis + "+")) ? 1 : (Input.GetKeyDown(GetKeyCode(axis + "-")) ? -1 : 0);
+        }
+    }
+
     public static void SetButton(CB button, KeyCode value)
     {
         Save(button + SaveNameModifier(), (int)value, SaveMode.Global);
