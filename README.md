@@ -14,3 +14,5 @@ Two speech controllers for different situations/games. Requires Sound and Trigge
 An easy way to create cutscenes using Triggers. Requires Triggers.
 ## Scene Loader
 Loads scenes with a fade out/fade in effect between loads. Use the Transition prefab on the starting scene for it to work.
+## Pathfinder
+A basic and (relatively) generic tile-based A* implementation. Includes post-processing & prevents impossible turns. Not super efficient though.

@@ -108,6 +108,10 @@ public class CrossfadeMusicPlayer : MonoBehaviour
                 seconderyAudioSource.volume = Volume * count;
             }
         }
+        else
+        {
+            mainAudioSource.volume = Volume;
+        }
         if (playingIntro && !mainAudioSource.isPlaying)
         {
             Playing = Playing.Replace("Intro", "");

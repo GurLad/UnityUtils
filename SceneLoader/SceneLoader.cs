@@ -12,7 +12,8 @@ public class SceneLoader : MonoBehaviour
     private string target;
     private float count;
     private bool? beforeChange = null;
-    private Color white = Color.white;
+    private Color white = Color.black;
+    private bool waitFrame;
     public static void LoadScene(string name)
     {
         if (current.beforeChange != null)
@@ -45,6 +46,11 @@ public class SceneLoader : MonoBehaviour
     {
         if (beforeChange != null)
         {
+            if (waitFrame)
+            {
+                waitFrame = false;
+                return;
+            }
             count += Time.unscaledDeltaTime * Speed;
             white.a = (beforeChange ?? true) ? count : (1 - count);
             Image.color = white;
@@ -55,6 +61,7 @@ public class SceneLoader : MonoBehaviour
                     SceneManager.LoadScene(target);
                     count -= 1;
                     beforeChange = false;
+                    waitFrame = true;
                 }
                 else
                 {

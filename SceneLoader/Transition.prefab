@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5703908632615395964}
   - component: {fileID: 4769156804486514870}
   - component: {fileID: 4403786049551744505}
-  - component: {fileID: 8100476804174217231}
+  - component: {fileID: 4804166159855053847}
   m_Layer: 5
   m_Name: Transition
   m_TagString: Untagged
@@ -92,7 +92,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8100476804174217218}
   m_CullTransparentMesh: 1
---- !u!114 &8100476804174217231
+--- !u!114 &4804166159855053847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,10 +101,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8100476804174217218}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 336f0fec0198dde4baf0fd1d115a6381, type: 3}
+  m_Script: {fileID: 11500000, guid: cd0779677ae7b034abe97e85ba04e630, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 2
+  Speed: 1
   Image: {fileID: 8100476804424105493}
 --- !u!1 &8100476804424105495
 GameObject:
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

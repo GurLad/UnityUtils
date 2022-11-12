@@ -5,18 +5,18 @@ using UnityEngine;
 public class SoundController : MonoBehaviour
 {
     private static SoundController soundController;
-    public float Volume
+    public static float Volume
     {
         get
         {
-            return volume;
+            return soundController.volume;
         }
         set
         {
-            volume = value;
-            for (int i = 0; i < audioSources.Count; i++)
+            soundController.volume = value;
+            for (int i = 0; i < soundController.audioSources.Count; i++)
             {
-                audioSources[i].volume = value;
+                soundController.audioSources[i].volume = value;
             }
         }
     }
@@ -68,14 +68,14 @@ public class SoundController : MonoBehaviour
         if (audioSource == null)
         {
             audioSource = soundController.gameObject.AddComponent<AudioSource>();
-            audioSource.volume = soundController.Volume;
+            audioSource.volume = Volume;
             soundController.audioSources.Add(audioSource);
         }
         audioSource.pitch = pitch;
         audioSource.PlayOneShot(audioClip);
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         for (int i = 3; i < audioSources.Count; i++)
         {
